@@ -4,7 +4,7 @@ function DiaryItem({ author, emotion, content, created_date }) {
   return (
     <div className="DiaryItem">
       <div className="info">
-        <span>
+        <span className="author_info">
           작성자: {author} | 감정 점수: {emotion}
         </span>
         <br />

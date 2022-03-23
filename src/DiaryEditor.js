@@ -1,9 +1,9 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState } from 'react';
 
-function DiaryEditor() {
+function DiaryEditor({ onCreate }) {
   const authorInput = useRef(); // autorInput 객체를 통해 HTML 태그에 접근할 수 있다.
   const textArea = useRef();
-  const [state, setState] = useState({ author: "", content: "", emotion: 1 });
+  const [state, setState] = useState({ author: '', content: '', emotion: 1 });
 
   const handleChangeState = (e) => {
     setState({ ...state, [e.target.name]: e.target.value });
@@ -19,7 +19,15 @@ function DiaryEditor() {
       textArea.current.focus();
       return;
     }
-    alert("저장 성공");
+
+    onCreate(state.author, state.content, state.emotion);
+    alert('저장 성공');
+    // 초기화
+    setState({
+      author: '',
+      content: '',
+      emotion: 1,
+    });
   };
 
   return (
@@ -43,7 +51,11 @@ function DiaryEditor() {
         ></textarea>
       </div>
       <div>
-        <select name="emotion" value={state.emotion} onChange={handleChangeState}>
+        <select
+          name="emotion"
+          value={state.emotion}
+          onChange={handleChangeState}
+        >
           <option value={1}>1</option>
           <option value={2}>2</option>
           <option value={3}>3</option>
