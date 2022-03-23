@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
 function DiaryEditor() {
+  const authorInput = useRef(); // autorInput 객체를 통해 HTML 태그에 접근할 수 있다.
+  const textArea = useRef();
   const [state, setState] = useState({ author: "", content: "", emotion: 1 });
 
   const handleChangeState = (e) => {
@@ -8,17 +10,37 @@ function DiaryEditor() {
   };
 
   const handleSubmit = () => {
-    console.log(state);
+    if (state.author.length < 1) {
+      authorInput.current.focus(); // authorInput.current는 현재 authorInput이 ref로 지정된 태그를 의미한다.
+      return;
+    }
+
+    if (state.content.length < 5) {
+      textArea.current.focus();
+      return;
+    }
+    alert("저장 성공");
   };
 
   return (
     <div className="DiaryEditor">
       <h2>오늘의 일기</h2>
       <div>
-        <input type="text" name="author" value={state.author} onChange={handleChangeState} />
+        <input
+          ref={authorInput}
+          type="text"
+          name="author"
+          value={state.author}
+          onChange={handleChangeState}
+        />
       </div>
       <div>
-        <textarea name="content" value={state.content} onChange={handleChangeState}></textarea>
+        <textarea
+          ref={textArea}
+          name="content"
+          value={state.content}
+          onChange={handleChangeState}
+        ></textarea>
       </div>
       <div>
         <select name="emotion" value={state.emotion} onChange={handleChangeState}>
