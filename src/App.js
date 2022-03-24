@@ -49,7 +49,7 @@ function App() {
   // 일기를 삭제하기 위한 함수
   const onDelete = (targetId) => {
     // console.log(`${targetId}가 삭제되었습니다.`);
-    const newDiaryList = data.filter((it) => it.id !== targetId);
+    const newDiaryList = data.filter((it) => it.id !== targetId); // targetId와 다른 id만 남기는 새로운 리스트를 만든다.
     setData(newDiaryList);
   };
 
