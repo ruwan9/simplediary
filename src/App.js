@@ -53,11 +53,20 @@ function App() {
     setData(newDiaryList);
   };
 
+  // 일기를 수저하기 위한 함수
+  const onEdit = (targetId, newContent) => {
+    setData(
+      data.map((it) =>
+        it.id === targetId ? { ...it, content: newContent } : it,
+      ),
+    );
+  };
+
   return (
     <div className="App">
       <h1>일기장</h1>
       <DiaryEditor onCreate={onCreate} />
-      <DiaryList diaryList={data} onRemove={onRemove} />
+      <DiaryList diaryList={data} onRemove={onRemove} onEdit={onEdit} />
     </div>
   );
 }
