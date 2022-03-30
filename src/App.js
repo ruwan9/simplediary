@@ -47,7 +47,7 @@ function App() {
   console.log(data);
 
   // 일기를 삭제하기 위한 함수
-  const onDelete = (targetId) => {
+  const onRemove = (targetId) => {
     // console.log(`${targetId}가 삭제되었습니다.`);
     const newDiaryList = data.filter((it) => it.id !== targetId); // targetId와 다른 id만 남기는 새로운 리스트를 만든다.
     setData(newDiaryList);
@@ -57,7 +57,7 @@ function App() {
     <div className="App">
       <h1>일기장</h1>
       <DiaryEditor onCreate={onCreate} />
-      <DiaryList diaryList={data} onDelete={onDelete} />
+      <DiaryList diaryList={data} onRemove={onRemove} />
     </div>
   );
 }
