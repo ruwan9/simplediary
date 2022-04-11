@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import './App.css';
 import DiaryEditor from './DiaryEditor';
 import DiaryList from './DiaryList';
@@ -32,7 +38,8 @@ function App() {
   const dataId = useRef(0); // +1씩 더해지면 추가될 data id ... 0번부터 시작
 
   // 일기 배열에 새로운 일기를 추가하는 함수
-  const onCreate = (author, content, emotion) => {
+  // useCallback를 활용해 memoization
+  const onCreate = useCallback((author, content, emotion) => {
     const created_date = new Date().getTime();
     const newItem = {
       author,
@@ -42,24 +49,27 @@ function App() {
       id: dataId.current,
     };
     dataId.current++;
-    setData([newItem, ...data]);
-  };
+    // 함수형 업데이트
+    setData((data) => [newItem, ...data]);
+  }, []);
 
   // 일기를 삭제하기 위한 함수
-  const onRemove = (targetId) => {
-    // console.log(`${targetId}가 삭제되었습니다.`);
-    const newDiaryList = data.filter((it) => it.id !== targetId); // targetId와 다른 id만 남기는 새로운 리스트를 만든다.
-    setData(newDiaryList);
-  };
+  const onRemove = useCallback((targetId) => {
+    // const newDiaryList = data.filter((it) => it.id !== targetId); // targetId와 다른 id만 남기는 새로운 리스트를 만든다.
+    // setData(newDiaryList);
+    // useCallback 사용 후 최신 state를 이용하기 위해 수정해주어야하는 부분
+    setData((data) => data.filter((it) => it.id !== targetId));
+  }, []);
 
   // 일기를 수정하기 위한 함수
-  const onEdit = (targetId, newContent) => {
-    setData(
+  const onEdit = useCallback((targetId, newContent) => {
+    // useCallback 사용 후 최신 state를 이용하기 위해 수정해주어야하는 부분
+    setData((data) =>
       data.map((it) =>
         it.id === targetId ? { ...it, content: newContent } : it,
       ),
     );
-  };
+  }, []);
 
   // API 데이터 받아오기
   const getData = async () => {
@@ -88,7 +98,7 @@ function App() {
   // useMemo - return을 가진 함수들을 memoization을 통해 최적화시키기 위해 사용
   // useMemo를 쓰는 순간부터 더이상 함수가 아니게 된다. (값을 return하기 때문)
   const getDiaryAnalysis = useMemo(() => {
-    console.log('일기 분석 시작');
+    // console.log('일기 분석 시작');
     const goodCount = data.filter((it) => it.emotion >= 3).length; // data 중 emotion이 3 이상인 것들 추리기
     const badCount = data.length - goodCount;
     const goodRatio = (goodCount / data.length) * 100;
