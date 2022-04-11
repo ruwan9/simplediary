@@ -32,7 +32,7 @@ function DiaryItem({
       localContentInput.current.focus();
       return;
     }
-    if (window.confirm(`${id}번째 일기를 수정하시겠습니까?`)) {
+    if (window.confirm(`${id}번 째 일기를 수정하시겠습니까?`)) {
       onEdit(id, localContent);
       toggleIsEdit();
     }
