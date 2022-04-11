@@ -2,8 +2,8 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useReducer,
   useRef,
-  useState,
 } from 'react';
 import './App.css';
 import DiaryEditor from './DiaryEditor';
@@ -33,24 +33,59 @@ import DiaryList from './DiaryList';
 //   },
 // ];
 
+// reducer 함수
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'INIT': {
+      return action.data;
+    }
+    case 'CREATE': {
+      const created_date = new Date().getTime();
+      const newItem = {
+        ...action.data,
+        created_date,
+      };
+      return [newItem, ...state];
+    }
+    case 'REMOVE': {
+      return state.filter((it) => it.id !== action.targetId);
+    }
+    case 'EDIT': {
+      return state.map((it) =>
+        it.id === action.targetId ? { ...it, content: action.newContent } : it,
+      );
+    }
+    default:
+      return state;
+  }
+};
+
 function App() {
-  const [data, setData] = useState([]); // 최종적으로 데이터를 관리할 state
+  // const [data, setData] = useState([]); // 최종적으로 데이터를 관리할 state
+  // useState 대신 useReducer 사용
+  const [data, dispatch] = useReducer(reducer, []);
+
   const dataId = useRef(0); // +1씩 더해지면 추가될 data id ... 0번부터 시작
 
   // 일기 배열에 새로운 일기를 추가하는 함수
   // useCallback를 활용해 memoization
   const onCreate = useCallback((author, content, emotion) => {
-    const created_date = new Date().getTime();
-    const newItem = {
-      author,
-      content,
-      emotion,
-      created_date,
-      id: dataId.current,
-    };
-    dataId.current++;
     // 함수형 업데이트
-    setData((data) => [newItem, ...data]);
+    // const created_date = new Date().getTime();
+    // const newItem = {
+    //   author,
+    //   content,
+    //   emotion,
+    //   created_date,
+    //   id: dataId.current,
+    // };
+    // dataId.current++;
+    // setData((data) => [newItem, ...data]);
+    dispatch({
+      type: 'CREATE',
+      data: { author, content, emotion, id: dataId.current },
+    });
+    dataId.current++;
   }, []);
 
   // 일기를 삭제하기 위한 함수
@@ -58,17 +93,19 @@ function App() {
     // const newDiaryList = data.filter((it) => it.id !== targetId); // targetId와 다른 id만 남기는 새로운 리스트를 만든다.
     // setData(newDiaryList);
     // useCallback 사용 후 최신 state를 이용하기 위해 수정해주어야하는 부분
-    setData((data) => data.filter((it) => it.id !== targetId));
+    // setData((data) => data.filter((it) => it.id !== targetId));
+    dispatch({ type: 'REMOVE', targetId });
   }, []);
 
   // 일기를 수정하기 위한 함수
   const onEdit = useCallback((targetId, newContent) => {
     // useCallback 사용 후 최신 state를 이용하기 위해 수정해주어야하는 부분
-    setData((data) =>
-      data.map((it) =>
-        it.id === targetId ? { ...it, content: newContent } : it,
-      ),
-    );
+    // setData((data) =>
+    //   data.map((it) =>
+    //     it.id === targetId ? { ...it, content: newContent } : it,
+    //   ),
+    // );
+    dispatch({ type: 'EDIT', targetId, newContent });
   }, []);
 
   // API 데이터 받아오기
@@ -87,8 +124,9 @@ function App() {
         id: dataId.current++,
       };
     });
-
-    setData(initData);
+    // 함수형 업데이트
+    // setData(initData);
+    dispatch({ type: 'INIT', data: initData });
   };
 
   useEffect(() => {
